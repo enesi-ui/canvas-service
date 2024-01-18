@@ -31,7 +31,7 @@ export class ComponentInstancesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.componentInstancesService.findOne(+id);
+    return this.componentInstancesService.findOne(id);
   }
 
   @Patch(':id')
@@ -40,13 +40,13 @@ export class ComponentInstancesController {
     @Body() updateComponentInstanceDto: UpdateComponentInstanceDto,
   ) {
     return this.componentInstancesService.update(
-      +id,
+      id,
       updateComponentInstanceDto,
     );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.componentInstancesService.remove(+id);
+    return this.componentInstancesService.remove(id);
   }
 }

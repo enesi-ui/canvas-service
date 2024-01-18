@@ -37,11 +37,11 @@ export class ComponentInstancesService {
     return this.componentInstanceModel.find().exec();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.componentInstanceModel.findById(id).exec();
   }
 
-  update(id: number, updateComponentInstanceDto: UpdateComponentInstanceDto) {
+  update(id: string, updateComponentInstanceDto: UpdateComponentInstanceDto) {
     return this.mainComponentModel
       .findByIdAndUpdate(id, updateComponentInstanceDto, {
         new: true,
@@ -49,7 +49,7 @@ export class ComponentInstancesService {
       .exec();
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.mainComponentModel.findByIdAndDelete(id).exec();
   }
 }
