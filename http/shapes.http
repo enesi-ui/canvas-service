@@ -1,0 +1,21 @@
+POST http://localhost:3000/shapes
+Content-Type: application/json
+
+{
+  "type": "ELLIPSE",
+  "fill": "red",
+  "fillAlpha": "0.52"
+}
+
+> {%
+  client.global.set("shapeId", response.body._id);
+%}
+
+###
+POST http://localhost:3000/main-components
+Content-Type: application/json
+
+{
+  "name": "My Main Component",
+  "shapeId": "{{shapeId}}"
+}
