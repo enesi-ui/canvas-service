@@ -12,10 +12,19 @@ import { ShapesService } from '../shapes/shapes.service';
 import { Shape } from '../shapes/shape.schema';
 import { CreateShapeDto } from '../shapes/shape.dto';
 import { MainComponent } from '../main-components/main-component.schema';
+import { MainComponentsService } from '../main-components/main-components.service';
+import { ComponentInstancesService } from '../component-instances/component-instances.service';
+import { CreateComponentInstanceDto } from '../component-instances/component-instance.dto';
+import { ComponentInstance } from '../component-instances/component-instance.schema';
+import { CreateMainComponentDto } from '../main-components/main-component.dto';
 
 @WebSocketGateway(8080)
 export class EventsGateway {
-  constructor(private readonly shapeService: ShapesService) {}
+  constructor(
+    private readonly shapeService: ShapesService,
+    private readonly mainComponentService: MainComponentsService,
+    private readonly componentInstanceService: ComponentInstancesService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -39,12 +48,48 @@ export class EventsGateway {
   }
 
   @SubscribeMessage('shapes/get/:id/main-component')
-  onMainComponent(
+  onShapeMainComponent(
     @MessageBody() id: string,
   ): Observable<WsResponse<MainComponent>> {
     const shape = from(this.shapeService.getMainComponent(id));
     return shape.pipe(
       map((item) => ({ event: 'shapes/get/:id/main-component', data: item })),
+    );
+  }
+
+  @SubscribeMessage('component-instances/post')
+  onComponentInstancePost(
+    @MessageBody() data: CreateComponentInstanceDto,
+  ): Observable<WsResponse<ComponentInstance>> {
+    const componentInstance = from(this.componentInstanceService.create(data));
+    return componentInstance.pipe(
+      map((item) => ({ event: 'component-instances/post', data: item })),
+    );
+  }
+
+  @SubscribeMessage('component-instances/get')
+  onComponentInstances(): Observable<WsResponse<ComponentInstance[]>> {
+    const componentInstances = from(this.componentInstanceService.findAll());
+    return componentInstances.pipe(
+      map((item) => ({ event: 'component-instances/get', data: item })),
+    );
+  }
+
+  @SubscribeMessage('main-components/post')
+  onMainComponentPost(
+    @MessageBody() data: CreateMainComponentDto,
+  ): Observable<WsResponse<MainComponent>> {
+    const mainComponent = from(this.mainComponentService.create(data));
+    return mainComponent.pipe(
+      map((item) => ({ event: 'main-components/post', data: item })),
+    );
+  }
+
+  @SubscribeMessage('main-components/get')
+  onMainComponents(): Observable<WsResponse<MainComponent[]>> {
+    const mainComponents = from(this.mainComponentService.findAll());
+    return mainComponents.pipe(
+      map((item) => ({ event: 'main-components/get', data: item })),
     );
   }
 }
