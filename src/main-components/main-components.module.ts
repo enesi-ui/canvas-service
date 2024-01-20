@@ -4,6 +4,7 @@ import { MainComponentsService } from './main-components.service';
 import { MainComponent, MainComponentSchema } from './main-component.schema';
 import { MainComponentsController } from './main-components.controller';
 import { Shape, ShapeSchema } from '../shapes/shape.schema';
+import { MainComponentsGateway } from './main-components.gateway';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { Shape, ShapeSchema } from '../shapes/shape.schema';
     ]),
   ],
   controllers: [MainComponentsController],
-  providers: [MainComponentsService],
+  providers: [MainComponentsService, MainComponentsGateway],
 })
 export class MainComponentsModule {}

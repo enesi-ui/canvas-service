@@ -35,8 +35,11 @@ export class ShapesController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateShapeDto: UpdateShapeDto) {
-    return this.shapesService.update(id, updateShapeDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateShapeDto: Omit<UpdateShapeDto, 'id'>,
+  ) {
+    return this.shapesService.update({ ...updateShapeDto, id });
   }
 
   @Delete(':id')

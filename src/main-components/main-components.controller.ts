@@ -8,7 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { MainComponent } from './main-component.schema';
-import { CreateMainComponentDto } from './main-component.dto';
+import {
+  CreateMainComponentDto,
+  UpdateMainComponentDto,
+} from './main-component.dto';
 import { MainComponentsService } from './main-components.service';
 
 @Controller('main-components')
@@ -38,8 +41,8 @@ export class MainComponentsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() createMainComponentDto: CreateMainComponentDto,
+    @Body() updateMainComponentDto: Omit<UpdateMainComponentDto, 'id'>,
   ) {
-    return this.mainComponentsService.update(id, createMainComponentDto);
+    return this.mainComponentsService.update({ ...updateMainComponentDto, id });
   }
 }

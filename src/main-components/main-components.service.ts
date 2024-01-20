@@ -36,9 +36,10 @@ export class MainComponentsService {
     return await this.mainComponentModel.findByIdAndDelete(id).exec();
   }
 
-  update(id: string, updateComponentDto: UpdateMainComponentDto) {
+  update(updateComponentDto: UpdateMainComponentDto) {
+    const { id, ...data } = updateComponentDto;
     return this.mainComponentModel
-      .findByIdAndUpdate(id, updateComponentDto, {
+      .findByIdAndUpdate(id, data, {
         new: true,
       })
       .exec();

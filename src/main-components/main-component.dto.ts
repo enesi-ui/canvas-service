@@ -9,5 +9,8 @@ export class CreateMainComponentDto {
 
 export class UpdateMainComponentDto {
   @IsString()
+  id: string;
+
+  @IsString()
   name: string;
 }

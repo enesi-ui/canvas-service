@@ -31,9 +31,10 @@ export class ShapesService {
     return await this.mainComponentModel.findOne({ shapeId: id }).exec();
   }
 
-  update(id: string, updateShapeDto: UpdateShapeDto) {
+  update(updateShapeDto: UpdateShapeDto) {
+    const { id, ...data } = updateShapeDto;
     return this.shapeModel
-      .findByIdAndUpdate(id, updateShapeDto, {
+      .findByIdAndUpdate(id, data, {
         new: true,
       })
       .exec();

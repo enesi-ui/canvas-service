@@ -7,6 +7,7 @@ import {
   MainComponentSchema,
 } from '../main-components/main-component.schema';
 import { Shape, ShapeSchema } from './shape.schema';
+import { ShapesGateway } from './shapes.gateway';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { Shape, ShapeSchema } from './shape.schema';
     ]),
   ],
   controllers: [ShapesController],
-  providers: [ShapesService],
+  providers: [ShapesService, ShapesGateway],
   exports: [ShapesService],
 })
 export class ShapesModule {}

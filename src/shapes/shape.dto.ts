@@ -13,4 +13,13 @@ export class CreateShapeDto {
   fillAlpha: number;
 }
 
-export class UpdateShapeDto extends PartialType(CreateShapeDto) {}
+export class UpdateShapeDto {
+  @IsString()
+  id: string;
+
+  @IsString()
+  fill: string;
+
+  @IsString()
+  fillAlpha: number;
+}
