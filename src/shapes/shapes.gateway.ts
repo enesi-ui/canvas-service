@@ -34,9 +34,10 @@ export class ShapesGateway {
   @SubscribeMessage('shapes/:id/get')
   onShapeById(@MessageBody() id: string): Observable<WsResponse<Shape>> {
     const shape = from(this.shapeService.findOne(id));
-    return shape.pipe(map((item) => ({ event: 'shapes/get/:id', data: item })));
+    return shape.pipe(map((item) => ({ event: 'shapes/:id/get', data: item })));
   }
 
+  // todo extract id with decorator
   @SubscribeMessage('shapes/:id/main-component/get')
   onShapeMainComponent(
     @MessageBody() id: string,
@@ -47,6 +48,7 @@ export class ShapesGateway {
     );
   }
 
+  // todo needs test
   @SubscribeMessage('shapes/:id/put')
   onShapePut(
     @MessageBody() data: UpdateShapeDto,

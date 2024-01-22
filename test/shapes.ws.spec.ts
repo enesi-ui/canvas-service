@@ -7,9 +7,7 @@ import { Shape } from '../src/shapes/shape.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { WebSocket } from 'ws';
-import { EventsModule } from '../src/events/events.module';
 import { MainComponent } from '../src/main-components/main-component.schema';
-import { MainComponentsModule } from '../src/main-components/main-components.module';
 
 const mongooseTestModule = new MongooseTestModule();
 
@@ -21,12 +19,7 @@ describe('Shapes-ws', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        EventsModule,
-        ShapesModule,
-        MainComponentsModule,
-        await mongooseTestModule.forRoot(),
-      ],
+      imports: [ShapesModule, await mongooseTestModule.forRoot()],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -38,7 +31,7 @@ describe('Shapes-ws', () => {
       getModelToken(MainComponent.name),
     );
 
-    webSocket = new WebSocket('http://localhost:8080');
+    webSocket = new WebSocket('http://localhost:8082');
 
     await new Promise((resolve, reject) => {
       webSocket.on('error', (err) => {
@@ -50,7 +43,7 @@ describe('Shapes-ws', () => {
     });
   });
 
-  it('/ (POST)', (done) => {
+  it('shapes/post', (done) => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
@@ -84,7 +77,7 @@ describe('Shapes-ws', () => {
     );
   });
 
-  it('/ (GET)', (done) => {
+  it('shapes/get', (done) => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: [
@@ -114,7 +107,7 @@ describe('Shapes-ws', () => {
       });
   });
 
-  it('/ (GET) :id', (done) => {
+  it('shapes/:id/get', (done) => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
@@ -122,7 +115,7 @@ describe('Shapes-ws', () => {
           type: 'CIRCLE',
           fillAlpha: 1,
         }),
-        event: 'shapes/get/:id',
+        event: 'shapes/:id/get',
       });
       done();
     });
@@ -138,18 +131,22 @@ describe('Shapes-ws', () => {
 
         webSocket.send(
           JSON.stringify({
-            event: 'shapes/get/:id',
+            event: 'shapes/:id/get',
             data: id,
           }),
         );
       });
   });
 
-  it.only('/ (GET) :id/main-component', (done) => {
+  it('shapes/:id/main-component/get', (done) => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
-        data: null,
-        event: 'shapes/get/:id/main-component',
+        data: expect.objectContaining({
+          type: 'main',
+          name: 'test-component',
+          shape: expect.any(String),
+        }),
+        event: 'shapes/:id/main-component/get',
       });
       done();
     });
@@ -162,7 +159,7 @@ describe('Shapes-ws', () => {
       })
       .then((savedShapes) => {
         mainComponentModel.create({
-          shapeId: savedShapes._id,
+          shape: savedShapes,
           name: 'test-component',
         });
         return savedShapes._id;
@@ -170,7 +167,7 @@ describe('Shapes-ws', () => {
       .then((id) => {
         webSocket.send(
           JSON.stringify({
-            event: 'shapes/get/:id/main-component',
+            event: 'shapes/:id/main-component/get',
             data: id,
           }),
         );

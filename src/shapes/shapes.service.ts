@@ -28,7 +28,7 @@ export class ShapesService {
   }
 
   async getMainComponent(id: string) {
-    return await this.mainComponentModel.findOne({ shapeId: id }).exec();
+    return await this.mainComponentModel.findOne({ shape: id }).exec();
   }
 
   update(updateShapeDto: UpdateShapeDto) {

@@ -1,7 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { IsEnum, IsString } from 'class-validator';
 import { ShapeType } from './shape.schema';
 
+//todo add further fields
 export class CreateShapeDto {
   @IsEnum(ShapeType)
   type: ShapeType;
