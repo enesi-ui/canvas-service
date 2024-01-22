@@ -12,7 +12,11 @@ import { ShapesService } from './shapes.service';
 import { Shape } from './shape.schema';
 import { CreateShapeDto, UpdateShapeDto } from './shape.dto';
 import { MainComponent } from '../main-components/main-component.schema';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { WebsocketExceptionsFilter } from '../filters/ws-exception.filter';
 
+@UseFilters(new WebsocketExceptionsFilter())
+@UsePipes(new ValidationPipe({ transform: true }))
 @WebSocketGateway(8082)
 export class ShapesGateway {
   constructor(private readonly shapeService: ShapesService) {}

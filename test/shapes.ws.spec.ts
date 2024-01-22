@@ -48,7 +48,7 @@ describe('Shapes-ws', () => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
           fill: '#000000',
-          type: 'CIRCLE',
+          type: 'ELLIPSE',
           fillAlpha: 1,
         }),
         event: 'shapes/post',
@@ -59,7 +59,7 @@ describe('Shapes-ws', () => {
       expect(savedShapes[0]).toEqual(
         expect.objectContaining({
           fill: '#000000',
-          type: 'CIRCLE',
+          type: 'ELLIPSE',
           fillAlpha: 1,
         }),
       );
@@ -70,8 +70,32 @@ describe('Shapes-ws', () => {
         event: 'shapes/post',
         data: {
           fill: '#000000',
-          type: 'CIRCLE',
+          type: 'ELLIPSE',
           fillAlpha: 1,
+        },
+      }),
+    );
+  });
+
+  it('shapes/post - throws for validation errors', (done) => {
+    webSocket.on('message', async (data) => {
+      expect(JSON.parse(data.toString())).toEqual({
+        data: expect.objectContaining({
+          error: 'Bad Request',
+          statusCode: 400,
+        }),
+        event: 'error',
+      });
+      const savedShapes = await shapeModel.find().exec();
+
+      expect(savedShapes.length).toEqual(0);
+      done();
+    });
+    webSocket.send(
+      JSON.stringify({
+        event: 'shapes/post',
+        data: {
+          fill: '#000000',
         },
       }),
     );
