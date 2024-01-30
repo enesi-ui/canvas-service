@@ -2,10 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { MongooseTestModule } from './test-utils';
-import { ShapesModule } from '../src/shapes/shapes.module';
 import { Model } from 'mongoose';
-import { Shape } from '../src/shapes/shape.schema';
-import { getModelToken } from '@nestjs/mongoose';
+import { Shape, ShapeSchema } from '../src/shapes/shape.schema';
+import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+
+import {
+  MainComponent,
+  MainComponentSchema,
+} from '../src/main-components/main-component.schema';
+import { ShapesController } from '../src/shapes/shapes.controller';
+import { ShapesService } from '../src/shapes/shapes.service';
 
 const mongooseTestModule = new MongooseTestModule();
 
@@ -14,7 +20,16 @@ describe('Shapes-rest', () => {
   let shapeModel: Model<Shape>;
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [ShapesModule, await mongooseTestModule.forRoot()],
+      imports: [
+        await mongooseTestModule.forRoot(),
+        MongooseModule.forFeature([
+          { name: MainComponent.name, schema: MainComponentSchema },
+          { name: Shape.name, schema: ShapeSchema },
+        ]),
+      ],
+      controllers: [ShapesController],
+      providers: [ShapesService],
+      exports: [ShapesService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
