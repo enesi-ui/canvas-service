@@ -24,16 +24,16 @@ export class ComponentPropertiesGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('main-components/:id/properties')
+  @SubscribeMessage('main-components/:id/properties/get')
   onMainComponentProperties(
     @MessageBody() id: string,
   ): Observable<WsResponse<ComponentProperty[]>> {
     const mainComponent = from(
-      this.componentPropertyService.findAllByMainComponentId(id),
+      this.componentPropertyService.findAllByMainComponent(id),
     );
     return mainComponent.pipe(
       map((item) => ({
-        event: 'main-components/:id/properties',
+        event: 'main-components/:id/properties/get',
         data: item,
       })),
     );
@@ -52,7 +52,7 @@ export class ComponentPropertiesGateway {
     );
   }
 
-  @SubscribeMessage('properties/:id')
+  @SubscribeMessage('properties/:id/get')
   onMainComponentPropertiesById(
     @MessageBody() id: string,
   ): Observable<WsResponse<ComponentProperty>> {

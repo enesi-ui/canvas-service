@@ -31,7 +31,7 @@ export class ComponentPropertiesService {
     return this.componentProperty.find().exec();
   }
 
-  findAllByMainComponentId(mainComponentId: string) {
+  findAllByMainComponent(mainComponentId: string) {
     return this.componentProperty
       .find({ mainComponent: mainComponentId })
       .exec();
