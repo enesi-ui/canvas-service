@@ -4,6 +4,7 @@ import { MainComponentsModule } from './main-components/main-components.module';
 import { ShapesModule } from './shapes/shapes.module';
 import { ComponentInstancesModule } from './component-instances/component-instances.module';
 import { ComponentPropertiesModule } from './component-properties/component-properties.module';
+import { DataResourcesModule } from './data-resources/data-resources.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ComponentPropertiesModule } from './component-properties/component-prop
     ShapesModule,
     ComponentInstancesModule,
     ComponentPropertiesModule,
+    DataResourcesModule,
   ],
 })
 export class AppModule {}

@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { IsEnum, IsString } from 'class-validator';
 import { ComponentPropertyType } from './component-property.schema';
 

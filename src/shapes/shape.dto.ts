@@ -1,4 +1,4 @@
-import {IsEnum, IsNumber, IsString, ValidateNested} from 'class-validator';
+import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { ShapeType } from './shape.schema';
 import { Type } from 'class-transformer';
 
