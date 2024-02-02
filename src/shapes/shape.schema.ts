@@ -8,7 +8,20 @@ export enum ShapeType {
   RECTANGLE = 'RECTANGLE',
 }
 
-@Schema()
+export class ContainerType {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export class StrokesType {
+  color: string;
+  alpha: number;
+  width: number;
+}
+
+@Schema({ id: true, toJSON: { virtuals: true } })
 export class Shape {
   @Prop({ required: true })
   type: ShapeType;
@@ -18,6 +31,17 @@ export class Shape {
 
   @Prop({ required: true })
   fillAlpha: number;
+
+  @Prop({ required: true, type: ContainerType })
+  container: ContainerType;
+
+  @Prop({ required: true, type: ContainerType })
+  graphics: ContainerType;
+
+  @Prop({ required: true, type: StrokesType })
+  strokes: StrokesType;
+
+  id: string;
 }
 
 export const ShapeSchema = SchemaFactory.createForClass(Shape);

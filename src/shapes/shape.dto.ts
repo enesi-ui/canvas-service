@@ -1,4 +1,10 @@
-import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
+import {
+  IsDefined,
+  IsEnum,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { ShapeType } from './shape.schema';
 import { Type } from 'class-transformer';
 
@@ -25,16 +31,18 @@ export class CreateShapeDto {
   @IsNumber()
   fillAlpha: number;
 
+  @IsDefined()
   @ValidateNested({ each: true })
   @Type(() => StrokePropertyDto)
   strokes: StrokePropertyDto[];
 
-  // todo -> test and schema
+  @IsDefined()
   @ValidateNested()
   @Type(() => BoxDto)
   container: BoxDto;
 
-  @ValidateNested()
+  @IsDefined()
+  @ValidateNested({ always: true })
   @Type(() => BoxDto)
   graphics: BoxDto;
 }
@@ -46,6 +54,6 @@ export class UpdateShapeDto {
   @IsString()
   fill: string;
 
-  @IsString()
+  @IsNumber()
   fillAlpha: number;
 }

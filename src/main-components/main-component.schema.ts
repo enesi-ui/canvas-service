@@ -4,7 +4,7 @@ import { Shape } from '../shapes/shape.schema';
 
 export type MainComponentDocument = HydratedDocument<MainComponent>;
 
-@Schema()
+@Schema({ id: true, toJSON: { virtuals: true } })
 export class MainComponent {
   @Prop({ default: 'main' })
   type: 'main' | 'instance';
