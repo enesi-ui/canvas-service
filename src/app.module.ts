@@ -6,6 +6,7 @@ import { ComponentInstancesModule } from './component-instances/component-instan
 import { ComponentPropertiesModule } from './component-properties/component-properties.module';
 import { DataResourcesModule } from './data-resources/data-resources.module';
 import { DataResourcePropertiesModule } from './data-resource-properties/data-resource-properties.module';
+import { VariantModule } from './variant/variant.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DataResourcePropertiesModule } from './data-resource-properties/data-re
     ComponentPropertiesModule,
     DataResourcesModule,
     DataResourcePropertiesModule,
+    VariantModule,
   ],
 })
 export class AppModule {}

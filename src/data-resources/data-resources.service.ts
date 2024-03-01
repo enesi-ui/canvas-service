@@ -13,22 +13,25 @@ export class DataResourcesService {
     private dataResourceModel: Model<DataResource>,
   ) {}
   create(createDataResourceDto: CreateDataRessourceDto) {
-    return 'This action adds a new dataRessource';
+    const dataResource = new this.dataResourceModel(createDataResourceDto);
+    return dataResource.save();
   }
 
   findAll() {
-    return [];
+    return this.dataResourceModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} dataRessource`;
+  findOne(id: string) {
+    return this.dataResourceModel.findById(id).exec();
   }
 
-  update(id: number, updateDateResourceDto: UpdateDataRessourceDto) {
-    return `This action updates a #${id} dataRessource`;
+  update(id: string, updateDateResourceDto: UpdateDataRessourceDto) {
+    return this.dataResourceModel.findByIdAndUpdate(id, updateDateResourceDto, {
+      new: true,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} dataRessource`;
+  remove(id: string) {
+    return this.dataResourceModel.findByIdAndDelete(id).exec();
   }
 }

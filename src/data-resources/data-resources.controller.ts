@@ -28,7 +28,7 @@ export class DataResourcesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.dataResourcesService.findOne(+id);
+    return this.dataResourcesService.findOne(id);
   }
 
   @Patch(':id')
@@ -36,11 +36,11 @@ export class DataResourcesController {
     @Param('id') id: string,
     @Body() updateDataRessourceDto: UpdateDataRessourceDto,
   ) {
-    return this.dataResourcesService.update(+id, updateDataRessourceDto);
+    return this.dataResourcesService.update(id, updateDataRessourceDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.dataResourcesService.remove(+id);
+    return this.dataResourcesService.remove(id);
   }
 }
