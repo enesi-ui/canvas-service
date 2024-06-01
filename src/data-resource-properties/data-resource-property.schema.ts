@@ -15,10 +15,18 @@ export class DataResourceProperty {
   @Prop({ required: true })
   key: string;
 
-  @Prop({ required: true })
-  value: string;
+  @Prop({
+    required: function () {
+      return this.type === 'LOCAL';
+    },
+  })
+  value?: string;
 
-  @Prop()
+  @Prop({
+    required: function () {
+      return this.type === 'REMOTE';
+    },
+  })
   url?: string;
 
   @Prop({ type: String, enum: DataResourcePropertyType, required: true })

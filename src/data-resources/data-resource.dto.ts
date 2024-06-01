@@ -6,7 +6,7 @@ export class OriginDto {
   y: number;
 }
 
-export class CreateDataRessourceDto {
+export class CreateDataResourceDto {
   @IsString()
   name: string;
 
@@ -15,7 +15,7 @@ export class CreateDataRessourceDto {
   container: OriginDto;
 }
 
-export class UpdateDataRessourceDto {
+export class UpdateDataResourceDto {
   @IsString()
   id: string;
 

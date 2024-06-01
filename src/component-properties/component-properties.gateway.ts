@@ -15,7 +15,7 @@ import {
   UpdateComponentPropertyDto,
 } from './component-property.dto';
 
-@WebSocketGateway(8088)
+@WebSocketGateway(8082)
 export class ComponentPropertiesGateway {
   constructor(
     private readonly componentPropertyService: ComponentPropertiesService,

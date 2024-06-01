@@ -12,7 +12,7 @@ import { ComponentInstancesService } from './component-instances.service';
 import { CreateComponentInstanceDto } from './component-instance.dto';
 import { ComponentInstance } from './component-instance.schema';
 
-@WebSocketGateway(8084)
+@WebSocketGateway(8082)
 export class ComponentInstancesGateway {
   constructor(
     private readonly componentInstanceService: ComponentInstancesService,

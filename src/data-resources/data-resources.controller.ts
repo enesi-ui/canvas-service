@@ -9,15 +9,15 @@ import {
 } from '@nestjs/common';
 import { DataResourcesService } from './data-resources.service';
 import {
-  CreateDataRessourceDto,
-  UpdateDataRessourceDto,
+  CreateDataResourceDto,
+  UpdateDataResourceDto,
 } from './data-resource.dto';
 @Controller('data-resources')
 export class DataResourcesController {
   constructor(private readonly dataResourcesService: DataResourcesService) {}
 
   @Post()
-  create(@Body() createDataRessourceDto: CreateDataRessourceDto) {
+  create(@Body() createDataRessourceDto: CreateDataResourceDto) {
     return this.dataResourcesService.create(createDataRessourceDto);
   }
 
@@ -34,7 +34,7 @@ export class DataResourcesController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateDataRessourceDto: UpdateDataRessourceDto,
+    @Body() updateDataRessourceDto: UpdateDataResourceDto,
   ) {
     return this.dataResourcesService.update(id, updateDataRessourceDto);
   }

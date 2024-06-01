@@ -16,7 +16,7 @@ import {
 } from './main-component.dto';
 import { MainComponent } from './main-component.schema';
 
-@WebSocketGateway(8081)
+@WebSocketGateway(8082)
 export class MainComponentsGateway {
   constructor(private readonly mainComponentService: MainComponentsService) {}
 
