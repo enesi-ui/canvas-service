@@ -63,6 +63,7 @@ export class ShapesGateway {
 
   @SubscribeMessage('shapes/:id/delete')
   onShapeDelete(@MessageBody() id: string): Observable<WsResponse<Shape>> {
+    console.log('id', id);
     const shape = from(this.shapeService.remove(id));
     return shape.pipe(
       map((item) => ({ event: 'shapes/:id/delete', data: item })),
