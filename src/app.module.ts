@@ -7,10 +7,18 @@ import { ComponentPropertiesModule } from './component-properties/component-prop
 import { DataResourcesModule } from './data-resources/data-resources.module';
 import { DataResourcePropertiesModule } from './data-resource-properties/data-resource-properties.module';
 import { VariantModule } from './variant/variant.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/enesi'),
+    ConfigModule.forRoot(),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get('DATABASE_URL'),
+      }),
+      inject: [ConfigService],
+    }),
     MainComponentsModule,
     ShapesModule,
     ComponentInstancesModule,
