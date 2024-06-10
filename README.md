@@ -14,6 +14,7 @@ DATABASE_URL=mongodb://localhost:27017/enesi
 
 initialize the database with the following command:
 this starts the mongodb on docker
+you can also use the https://github.com/enesi-ui/orchestration repository to start the complete stack
 
 ```bash
 npm run start:env
