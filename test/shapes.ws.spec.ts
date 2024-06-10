@@ -12,9 +12,8 @@ import { MainComponent } from '../src/main-components/main-component.schema';
 const mongooseTestModule = new MongooseTestModule();
 
 const mockData = {
-  fill: '#000000',
   type: 'RECTANGLE',
-  fillAlpha: 1,
+  fills: [],
   strokes: [],
   container: {
     x: 0,
@@ -78,9 +77,7 @@ describe('Shapes-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
-          fill: '#000000',
           type: 'RECTANGLE',
-          fillAlpha: 1,
         }),
         event: 'shapes/post',
       });
@@ -89,9 +86,7 @@ describe('Shapes-ws', () => {
       expect(savedShapes.length).toEqual(1);
       expect(savedShapes[0]).toEqual(
         expect.objectContaining({
-          fill: '#000000',
           type: 'RECTANGLE',
-          fillAlpha: 1,
         }),
       );
       done();
@@ -133,9 +128,7 @@ describe('Shapes-ws', () => {
       expect(JSON.parse(data.toString())).toEqual({
         data: [
           expect.objectContaining({
-            fill: '#000000',
             type: 'RECTANGLE',
-            fillAlpha: 1,
           }),
         ],
         event: 'shapes/get',
@@ -156,9 +149,7 @@ describe('Shapes-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
-          fill: '#000000',
           type: 'RECTANGLE',
-          fillAlpha: 1,
         }),
         event: 'shapes/:id/get',
       });
@@ -213,9 +204,13 @@ describe('Shapes-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
-          fill: '#a92f2f',
           type: 'RECTANGLE',
-          fillAlpha: 1,
+          fills: [
+            {
+              color: '#a92f2f',
+              alpha: 1,
+            },
+          ],
         }),
         event: 'shapes/:id/put',
       });
@@ -230,9 +225,13 @@ describe('Shapes-ws', () => {
           event: 'shapes/:id/put',
           data: {
             id,
-            fill: '#a92f2f',
+            fills: [
+              {
+                color: '#a92f2f',
+                alpha: 1,
+              },
+            ],
             type: 'RECTANGLE',
-            fillAlpha: 1,
           },
         }),
       );
@@ -243,9 +242,8 @@ describe('Shapes-ws', () => {
     secondWebSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
-          fill: '#a92f2f',
+          fills: [{ color: '#a92f2f', alpha: 1 }],
           type: 'RECTANGLE',
-          fillAlpha: 1,
         }),
         event: 'shapes/:id/put',
       });
@@ -260,9 +258,8 @@ describe('Shapes-ws', () => {
           event: 'shapes/:id/put',
           data: {
             id,
-            fill: '#a92f2f',
+            fills: [{ color: '#a92f2f', alpha: 1 }],
             type: 'RECTANGLE',
-            fillAlpha: 1,
           },
         }),
       );

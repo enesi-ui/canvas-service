@@ -21,16 +21,15 @@ export class StrokesType {
   width: number;
 }
 
+export class FillsType {
+  color: string;
+  alpha: number;
+}
+
 @Schema({ id: true, toJSON: { virtuals: true } })
 export class Shape {
   @Prop({ required: true })
   type: ShapeType;
-
-  @Prop({ required: true })
-  fill: string;
-
-  @Prop({ required: true })
-  fillAlpha: number;
 
   @Prop({ required: true, type: ContainerType })
   container: ContainerType;
@@ -40,6 +39,9 @@ export class Shape {
 
   @Prop({ required: true, type: StrokesType })
   strokes: StrokesType;
+
+  @Prop({ required: true, type: FillsType })
+  fills: FillsType;
 
   id: string;
 }

@@ -6,7 +6,7 @@ import {
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import {from, Observable, tap, throttleTime} from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server } from 'ws';
 import { ShapesService } from './shapes.service';

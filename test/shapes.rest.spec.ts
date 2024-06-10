@@ -46,9 +46,8 @@ describe('Shapes-rest', () => {
     await request(app.getHttpServer())
       .post('/shapes')
       .send({
-        fill: '#000000',
         type: 'RECTANGLE',
-        fillAlpha: 1,
+        fills: [],
         strokes: [],
         container: { x: 0, y: 0, width: 0, height: 0 },
         graphics: { x: 0, y: 0, width: 0, height: 0 },
@@ -60,9 +59,7 @@ describe('Shapes-rest', () => {
     expect(savedShapes.length).toEqual(1);
     expect(savedShapes[0]).toEqual(
       expect.objectContaining({
-        fill: '#000000',
         type: 'RECTANGLE',
-        fillAlpha: 1,
       }),
     );
   });
