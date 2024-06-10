@@ -45,7 +45,14 @@ describe('Shapes-rest', () => {
   it('/ (POST)', async () => {
     await request(app.getHttpServer())
       .post('/shapes')
-      .send({ fill: '#000000', type: 'CIRCLE', fillAlpha: 1 })
+      .send({
+        fill: '#000000',
+        type: 'RECTANGLE',
+        fillAlpha: 1,
+        strokes: [],
+        container: { x: 0, y: 0, width: 0, height: 0 },
+        graphics: { x: 0, y: 0, width: 0, height: 0 },
+      })
       .expect(201);
 
     const savedShapes = await shapeModel.find().exec();
@@ -54,7 +61,7 @@ describe('Shapes-rest', () => {
     expect(savedShapes[0]).toEqual(
       expect.objectContaining({
         fill: '#000000',
-        type: 'CIRCLE',
+        type: 'RECTANGLE',
         fillAlpha: 1,
       }),
     );

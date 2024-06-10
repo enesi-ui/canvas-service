@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json ./test",
+    "test:e2e": "jest --config ./test/jest-e2e.json ./test --runInBand",
     "start:env": "docker-compose up -d",
     "docker:build": " docker build -t enesi/canvas-service:latest .",
     "docker:push": "docker push enesi/canvas-service:latest",

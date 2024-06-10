@@ -11,10 +11,30 @@ import { MainComponent } from '../src/main-components/main-component.schema';
 
 const mongooseTestModule = new MongooseTestModule();
 
+const mockData = {
+  fill: '#000000',
+  type: 'RECTANGLE',
+  fillAlpha: 1,
+  strokes: [],
+  container: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  },
+  graphics: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  },
+};
+
 describe('Shapes-ws', () => {
   let app: INestApplication;
   let shapeModel: Model<Shape>;
   let webSocket: WebSocket;
+  let secondWebSocket: WebSocket;
   let mainComponentModel: Model<MainComponent>;
 
   beforeEach(async () => {
@@ -41,6 +61,17 @@ describe('Shapes-ws', () => {
         resolve(0);
       });
     });
+
+    secondWebSocket = new WebSocket('http://localhost:8082');
+
+    await new Promise((resolve, reject) => {
+      secondWebSocket.on('error', (err) => {
+        reject(err);
+      });
+      secondWebSocket.on('open', () => {
+        resolve(0);
+      });
+    });
   });
 
   it('shapes/post', (done) => {
@@ -48,7 +79,7 @@ describe('Shapes-ws', () => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
           fill: '#000000',
-          type: 'ELLIPSE',
+          type: 'RECTANGLE',
           fillAlpha: 1,
         }),
         event: 'shapes/post',
@@ -59,7 +90,7 @@ describe('Shapes-ws', () => {
       expect(savedShapes[0]).toEqual(
         expect.objectContaining({
           fill: '#000000',
-          type: 'ELLIPSE',
+          type: 'RECTANGLE',
           fillAlpha: 1,
         }),
       );
@@ -68,11 +99,7 @@ describe('Shapes-ws', () => {
     webSocket.send(
       JSON.stringify({
         event: 'shapes/post',
-        data: {
-          fill: '#000000',
-          type: 'ELLIPSE',
-          fillAlpha: 1,
-        },
+        data: mockData,
       }),
     );
   });
@@ -107,7 +134,7 @@ describe('Shapes-ws', () => {
         data: [
           expect.objectContaining({
             fill: '#000000',
-            type: 'CIRCLE',
+            type: 'RECTANGLE',
             fillAlpha: 1,
           }),
         ],
@@ -116,19 +143,13 @@ describe('Shapes-ws', () => {
       done();
     });
 
-    shapeModel
-      .create({
-        fill: '#000000',
-        type: 'CIRCLE',
-        fillAlpha: 1,
-      })
-      .then(() => {
-        webSocket.send(
-          JSON.stringify({
-            event: 'shapes/get',
-          }),
-        );
-      });
+    shapeModel.create(mockData).then(() => {
+      webSocket.send(
+        JSON.stringify({
+          event: 'shapes/get',
+        }),
+      );
+    });
   });
 
   it('shapes/:id/get', (done) => {
@@ -136,7 +157,7 @@ describe('Shapes-ws', () => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
           fill: '#000000',
-          type: 'CIRCLE',
+          type: 'RECTANGLE',
           fillAlpha: 1,
         }),
         event: 'shapes/:id/get',
@@ -144,22 +165,16 @@ describe('Shapes-ws', () => {
       done();
     });
 
-    shapeModel
-      .create({
-        fill: '#000000',
-        type: 'CIRCLE',
-        fillAlpha: 1,
-      })
-      .then((savedShapes) => {
-        const id = savedShapes._id;
+    shapeModel.create(mockData).then((savedShapes) => {
+      const id = savedShapes._id;
 
-        webSocket.send(
-          JSON.stringify({
-            event: 'shapes/:id/get',
-            data: id,
-          }),
-        );
-      });
+      webSocket.send(
+        JSON.stringify({
+          event: 'shapes/:id/get',
+          data: id,
+        }),
+      );
+    });
   });
 
   it('shapes/:id/main-component/get', (done) => {
@@ -176,11 +191,7 @@ describe('Shapes-ws', () => {
     });
 
     shapeModel
-      .create({
-        fill: '#000000',
-        type: 'CIRCLE',
-        fillAlpha: 1,
-      })
+      .create(mockData)
       .then((savedShapes) => {
         mainComponentModel.create({
           shape: savedShapes,
@@ -198,8 +209,69 @@ describe('Shapes-ws', () => {
       });
   });
 
+  it('shapes/:id/put', (done) => {
+    webSocket.on('message', async (data) => {
+      expect(JSON.parse(data.toString())).toEqual({
+        data: expect.objectContaining({
+          fill: '#a92f2f',
+          type: 'RECTANGLE',
+          fillAlpha: 1,
+        }),
+        event: 'shapes/:id/put',
+      });
+      done();
+    });
+
+    shapeModel.create(mockData).then((savedShapes) => {
+      const id = savedShapes._id;
+
+      webSocket.send(
+        JSON.stringify({
+          event: 'shapes/:id/put',
+          data: {
+            id,
+            fill: '#a92f2f',
+            type: 'RECTANGLE',
+            fillAlpha: 1,
+          },
+        }),
+      );
+    });
+  });
+
+  it('shapes/:id/put - broadcasts message to all connected clients', (done) => {
+    secondWebSocket.on('message', async (data) => {
+      expect(JSON.parse(data.toString())).toEqual({
+        data: expect.objectContaining({
+          fill: '#a92f2f',
+          type: 'RECTANGLE',
+          fillAlpha: 1,
+        }),
+        event: 'shapes/:id/put',
+      });
+      done();
+    });
+
+    shapeModel.create(mockData).then((savedShapes) => {
+      const id = savedShapes._id;
+
+      webSocket.send(
+        JSON.stringify({
+          event: 'shapes/:id/put',
+          data: {
+            id,
+            fill: '#a92f2f',
+            type: 'RECTANGLE',
+            fillAlpha: 1,
+          },
+        }),
+      );
+    });
+  });
+
   afterEach(async () => {
     webSocket.close();
+    secondWebSocket.close();
     await mongooseTestModule.stop();
     await app.close();
   });
