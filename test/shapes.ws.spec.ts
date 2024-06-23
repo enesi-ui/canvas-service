@@ -27,6 +27,9 @@ const mockData = {
     width: 0,
     height: 0,
   },
+  zIndex: 0,
+  name: 'Some Shape',
+  radius: 0,
 };
 
 describe('Shapes-ws', () => {
@@ -200,7 +203,7 @@ describe('Shapes-ws', () => {
       });
   });
 
-  it('shapes/:id/put', (done) => {
+  it('shapes/:id/patch', (done) => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
@@ -212,7 +215,7 @@ describe('Shapes-ws', () => {
             },
           ],
         }),
-        event: 'shapes/:id/put',
+        event: 'shapes/:id/patch',
       });
       done();
     });
@@ -222,7 +225,7 @@ describe('Shapes-ws', () => {
 
       webSocket.send(
         JSON.stringify({
-          event: 'shapes/:id/put',
+          event: 'shapes/:id/patch',
           data: {
             id,
             fills: [
@@ -238,14 +241,14 @@ describe('Shapes-ws', () => {
     });
   });
 
-  it('shapes/:id/put - broadcasts message to all connected clients', (done) => {
+  it('shapes/:id/patch - broadcasts message to all connected clients', (done) => {
     secondWebSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: expect.objectContaining({
           fills: [{ color: '#a92f2f', alpha: 1 }],
           type: 'RECTANGLE',
         }),
-        event: 'shapes/:id/put',
+        event: 'shapes/:id/patch',
       });
       done();
     });
@@ -255,7 +258,7 @@ describe('Shapes-ws', () => {
 
       webSocket.send(
         JSON.stringify({
-          event: 'shapes/:id/put',
+          event: 'shapes/:id/patch',
           data: {
             id,
             fills: [{ color: '#a92f2f', alpha: 1 }],

@@ -43,7 +43,6 @@ export class ShapesGateway {
     return shape.pipe(map((item) => ({ event: 'shapes/:id/get', data: item })));
   }
 
-  // todo extract id with decorator
   @SubscribeMessage('shapes/:id/main-component/get')
   onShapeMainComponent(
     @MessageBody() id: string,
@@ -54,7 +53,7 @@ export class ShapesGateway {
     );
   }
 
-  @SubscribeMessage('shapes/:id/put')
+  @SubscribeMessage('shapes/:id/patch')
   onShapePut(
     @MessageBody() data: UpdateShapeDto,
     @ConnectedSocket() client: WebSocket,
@@ -68,13 +67,13 @@ export class ShapesGateway {
             otherClient.readyState === WebSocket.OPEN
           ) {
             otherClient.send(
-              JSON.stringify({ event: 'shapes/:id/put', data: item }),
+              JSON.stringify({ event: 'shapes/:id/patch', data: item }),
             );
           }
         });
         return item;
       }),
-      map((item) => ({ event: 'shapes/:id/put', data: item })),
+      map((item) => ({ event: 'shapes/:id/patch', data: item })),
     );
   }
 

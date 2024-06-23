@@ -41,7 +41,6 @@ export class ShapesService {
   }
 
   remove(id: string) {
-    console.log('id', id);
     return this.shapeModel.findByIdAndDelete(id).exec();
   }
 }

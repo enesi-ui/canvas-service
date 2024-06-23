@@ -43,6 +43,15 @@ export class Shape {
   @Prop({ required: true, type: FillsType })
   fills: FillsType;
 
+  @Prop({ required: true })
+  radius: number;
+
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  zIndex: number;
+
   id: string;
 }
 

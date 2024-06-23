@@ -1,4 +1,10 @@
-import {IsDefined, IsEnum, IsOptional, IsString, ValidateNested} from 'class-validator';
+import {
+  IsDefined,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { ShapeType } from './shape.schema';
 import { Type } from 'class-transformer';
 
@@ -43,6 +49,14 @@ export class CreateShapeDto {
   @ValidateNested({ always: true })
   @Type(() => BoxDto)
   graphics: BoxDto;
+
+  @IsDefined()
+  @Type(() => Number)
+  radius: number;
+
+  @IsDefined()
+  @IsString()
+  name: string;
 }
 
 export class UpdateShapeDto {
@@ -68,4 +82,12 @@ export class UpdateShapeDto {
   @ValidateNested({ always: true })
   @Type(() => BoxDto)
   graphics: BoxDto;
+
+  @IsOptional()
+  @Type(() => Number)
+  radius: number;
+
+  @IsOptional()
+  @IsString()
+  name: string;
 }
