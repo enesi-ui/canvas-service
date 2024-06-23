@@ -52,6 +52,9 @@ export class Shape {
   @Prop({ required: true })
   zIndex: number;
 
+  @Prop({ required: true })
+  canvasId: string;
+
   id: string;
 }
 

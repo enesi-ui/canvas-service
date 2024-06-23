@@ -13,5 +13,6 @@ import { SelectionGateway } from './selection.gateway';
     ]),
   ],
   providers: [SelectionService, SelectionGateway],
+  exports: [SelectionService],
 })
 export class SelectionModule {}

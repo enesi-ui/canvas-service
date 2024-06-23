@@ -31,6 +31,7 @@ const shapeMockData = {
   zIndex: 0,
   name: 'Some Shape',
   radius: 0,
+  canvasId: '123',
 };
 
 describe('Selection-ws', () => {
@@ -42,9 +43,9 @@ describe('Selection-ws', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        ShapesModule,
-        SelectionModule,
         await mongooseTestModule.forRoot(),
+        SelectionModule,
+        ShapesModule,
       ],
     }).compile();
 

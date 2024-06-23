@@ -30,6 +30,7 @@ const mockData = {
   zIndex: 0,
   name: 'Some Shape',
   radius: 0,
+  canvasId: '123',
 };
 
 describe('Shapes-ws', () => {
@@ -92,12 +93,13 @@ describe('Shapes-ws', () => {
           type: 'RECTANGLE',
         }),
       );
+
       done();
     });
     webSocket.send(
       JSON.stringify({
         event: 'shapes/post',
-        data: mockData,
+        data: { ...mockData, canvasId: 'some-unique-id' },
       }),
     );
   });

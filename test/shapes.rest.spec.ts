@@ -51,6 +51,10 @@ describe('Shapes-rest', () => {
         strokes: [],
         container: { x: 0, y: 0, width: 0, height: 0 },
         graphics: { x: 0, y: 0, width: 0, height: 0 },
+        zIndex: 0,
+        name: 'Some Shape',
+        radius: 0,
+        canvasId: '123',
       })
       .expect(201);
 
