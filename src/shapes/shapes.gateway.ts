@@ -34,7 +34,9 @@ export class ShapesGateway {
   @SubscribeMessage('shapes/post')
   onShape(@MessageBody() data: CreateShapeDto): Observable<WsResponse<Shape>> {
     const shape = from(this.shapeService.create(data));
-    return shape.pipe(map((item) => ({ event: 'shapes/post', data: item })));
+    return shape.pipe(
+      map((item) => ({ event: 'shapes/:id/post', data: item })),
+    );
   }
 
   @SubscribeMessage('shapes/:id/get')
