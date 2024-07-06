@@ -70,28 +70,28 @@ export class UpdateShapeDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => FillPropertyDto)
-  fills: FillPropertyDto[];
+  fills?: FillPropertyDto[];
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => StrokePropertyDto)
-  strokes: StrokePropertyDto[];
+  strokes?: StrokePropertyDto[];
 
   @IsOptional()
   @ValidateNested()
   @Type(() => BoxDto)
-  container: BoxDto;
+  container?: BoxDto;
 
   @IsOptional()
   @ValidateNested({ always: true })
   @Type(() => BoxDto)
-  graphics: BoxDto;
+  graphics?: BoxDto;
 
   @IsOptional()
   @Type(() => Number)
-  radius: number;
+  radius?: number;
 
   @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 }

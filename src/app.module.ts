@@ -9,6 +9,7 @@ import { DataResourcePropertiesModule } from './data-resource-properties/data-re
 import { VariantModule } from './variant/variant.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SelectionModule } from './selection/selection.module';
+import { ObjectsModule } from './objects/objects.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SelectionModule } from './selection/selection.module';
     DataResourcePropertiesModule,
     VariantModule,
     SelectionModule,
+    ObjectsModule,
   ],
 })
 export class AppModule {}
