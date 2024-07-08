@@ -8,6 +8,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { WebSocket } from 'ws';
 import { MainComponent } from '../src/main-components/main-component.schema';
+import { Canvas } from '../src/canvas/canvas.schema';
 
 const mongooseTestModule = new MongooseTestModule();
 
@@ -30,7 +31,6 @@ const mockData = {
   zIndex: 0,
   name: 'Some Shape',
   radius: 0,
-  canvasId: '123',
 };
 
 describe('Shapes-ws', () => {
@@ -39,6 +39,8 @@ describe('Shapes-ws', () => {
   let webSocket: WebSocket;
   let secondWebSocket: WebSocket;
   let mainComponentModel: Model<MainComponent>;
+  let canvasModel: Model<Canvas>;
+  let canvas: Canvas;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -53,6 +55,12 @@ describe('Shapes-ws', () => {
     mainComponentModel = moduleFixture.get<Model<MainComponent>>(
       getModelToken(MainComponent.name),
     );
+    canvasModel = moduleFixture.get<Model<Canvas>>(getModelToken(Canvas.name));
+
+    canvas = await canvasModel.create({
+      name: 'canvasName',
+      minZIndex: 0,
+    });
 
     webSocket = new WebSocket('http://localhost:8082');
 
@@ -83,7 +91,7 @@ describe('Shapes-ws', () => {
         data: expect.objectContaining({
           type: 'RECTANGLE',
         }),
-        event: 'shapes/post',
+        event: 'shapes/:id/post',
       });
       const savedShapes = await shapeModel.find().exec();
 
@@ -99,7 +107,7 @@ describe('Shapes-ws', () => {
     webSocket.send(
       JSON.stringify({
         event: 'shapes/post',
-        data: { ...mockData, canvasId: 'some-unique-id' },
+        data: { ...mockData, canvasId: canvas.id.toString() },
       }),
     );
   });
@@ -141,12 +149,43 @@ describe('Shapes-ws', () => {
       done();
     });
 
-    shapeModel.create(mockData).then(() => {
+    shapeModel.create({ ...mockData, canvas }).then(() => {
       webSocket.send(
         JSON.stringify({
           event: 'shapes/get',
         }),
       );
+    });
+  });
+
+  it('shapes/get canvas id', (done) => {
+    webSocket.on('message', async (data) => {
+      expect(JSON.parse(data.toString())).toEqual({
+        data: [
+          expect.objectContaining({
+            type: 'RECTANGLE',
+          }),
+        ],
+        event: 'shapes/get',
+      });
+      done();
+    });
+
+    shapeModel.create({ ...mockData, canvas }).then(() => {
+      canvasModel
+        .create({ name: 'canvasName2', minZIndex: 0 })
+        .then((newCanvas) => {
+          shapeModel
+            .create({ ...mockData, type: 'ELLIPSE', canvas: newCanvas })
+            .then(() => {
+              webSocket.send(
+                JSON.stringify({
+                  event: 'shapes/get',
+                  data: canvas.id,
+                }),
+              );
+            });
+        });
     });
   });
 
@@ -161,7 +200,7 @@ describe('Shapes-ws', () => {
       done();
     });
 
-    shapeModel.create(mockData).then((savedShapes) => {
+    shapeModel.create({ ...mockData, canvas }).then((savedShapes) => {
       const id = savedShapes._id;
 
       webSocket.send(
@@ -187,7 +226,7 @@ describe('Shapes-ws', () => {
     });
 
     shapeModel
-      .create(mockData)
+      .create({ ...mockData, canvas })
       .then((savedShapes) => {
         mainComponentModel.create({
           shape: savedShapes,
@@ -222,7 +261,7 @@ describe('Shapes-ws', () => {
       done();
     });
 
-    shapeModel.create(mockData).then((savedShapes) => {
+    shapeModel.create({ ...mockData, canvas }).then((savedShapes) => {
       const id = savedShapes._id;
 
       webSocket.send(
@@ -255,7 +294,7 @@ describe('Shapes-ws', () => {
       done();
     });
 
-    shapeModel.create(mockData).then((savedShapes) => {
+    shapeModel.create({ ...mockData, canvas }).then((savedShapes) => {
       const id = savedShapes._id;
 
       webSocket.send(

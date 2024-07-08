@@ -9,6 +9,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { WebSocket } from 'ws';
 import { SelectionModule } from '../src/selection/selection.module';
+import { Canvas } from '../src/canvas/canvas.schema';
 
 const mongooseTestModule = new MongooseTestModule();
 
@@ -31,14 +32,15 @@ const shapeMockData = {
   zIndex: 0,
   name: 'Some Shape',
   radius: 0,
-  canvasId: '123',
 };
 
 describe('Selection-ws', () => {
   let app: INestApplication;
   let shapeModel: Model<Shape>;
   let selectionModel: Model<Selection>;
+  let canvasModel: Model<Canvas>;
   let webSocket: WebSocket;
+  let canvas: Canvas;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -57,6 +59,12 @@ describe('Selection-ws', () => {
     selectionModel = moduleFixture.get<Model<Selection>>(
       getModelToken(Selection.name),
     );
+    canvasModel = moduleFixture.get<Model<Canvas>>(getModelToken(Canvas.name));
+
+    canvas = await canvasModel.create({
+      name: 'canvasName',
+      minZIndex: 0,
+    });
 
     webSocket = new WebSocket('http://localhost:8082');
 
@@ -74,7 +82,7 @@ describe('Selection-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: {
-          canvasId: 'some-unique-id',
+          canvasId: canvas.id,
           shapeIds: [expect.any(String)],
         },
         event: 'selection/:canvasId/get',
@@ -82,12 +90,12 @@ describe('Selection-ws', () => {
       done();
     });
 
-    shapeModel.create(shapeMockData).then((shape) => {
-      selectionModel.create({ shape, canvasId: 'some-unique-id' }).then(() => {
+    shapeModel.create({ ...shapeMockData, canvas }).then((shape) => {
+      selectionModel.create({ shape, canvas }).then(() => {
         webSocket.send(
           JSON.stringify({
             event: 'selection/:canvasId/get',
-            data: 'some-unique-id',
+            data: canvas.id,
           }),
         );
       });
@@ -99,7 +107,7 @@ describe('Selection-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: {
-          canvasId: 'some-unique',
+          canvasId: canvas.id,
           shapeIds: [shapeId],
         },
         event: 'selection/:canvasId/put',
@@ -107,7 +115,7 @@ describe('Selection-ws', () => {
       done();
     });
 
-    shapeModel.create(shapeMockData).then((shape) => {
+    shapeModel.create({ ...shapeMockData, canvas }).then((shape) => {
       shapeId = shape.id;
       webSocket.send(
         JSON.stringify({
@@ -115,7 +123,7 @@ describe('Selection-ws', () => {
           data: {
             selectShapes: [shape._id],
             deselectShapes: [],
-            canvasId: 'some-unique',
+            canvasId: canvas.id,
             select: true,
           },
         }),
@@ -127,26 +135,26 @@ describe('Selection-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: {
-          canvasId: 'some-unique-id',
+          canvasId: canvas.id,
           shapeIds: [],
         },
         event: 'selection/:canvasId/put',
       });
-      selectionModel.find({ canvasId: 'some-unique' }).then((selections) => {
+      selectionModel.find({ canvas }).then((selections) => {
         expect(selections.length).toBe(0);
       });
       done();
     });
 
-    shapeModel.create(shapeMockData).then((shape) => {
-      selectionModel.create({ shape, canvasId: 'some-unique-id' }).then(() => {
+    shapeModel.create({ ...shapeMockData, canvas }).then((shape) => {
+      selectionModel.create({ shape, canvas }).then(() => {
         webSocket.send(
           JSON.stringify({
             event: 'selection/:canvasId/put',
             data: {
               selectShapes: [],
               deselectShapes: [shape._id],
-              canvasId: 'some-unique-id',
+              canvasId: canvas.id,
               select: false,
             },
           }),
@@ -166,20 +174,27 @@ describe('Selection-ws', () => {
       done();
     });
 
-    shapeModel.create(shapeMockData).then((shape) => {
-      selectionModel.create({ shape, canvasId: 'some-unique-id' }).then(() => {
-        webSocket.send(
-          JSON.stringify({
-            event: 'selection/:canvasId/put',
-            data: {
-              selectShapes: [shape._id],
-              deselectShapes: [],
-              canvasId: 'another-unique-id',
-              select: true,
-            },
-          }),
-        );
-      });
+    shapeModel.create({ ...shapeMockData, canvas }).then((shape) => {
+      canvasModel
+        .create({
+          name: 'newCanvasName',
+          minZIndex: 0,
+        })
+        .then((newCanvas) => {
+          selectionModel.create({ shape, canvas }).then(() => {
+            webSocket.send(
+              JSON.stringify({
+                event: 'selection/:canvasId/put',
+                data: {
+                  selectShapes: [shape._id],
+                  deselectShapes: [],
+                  canvasId: newCanvas.id,
+                  select: true,
+                },
+              }),
+            );
+          });
+        });
     });
   });
 
@@ -187,26 +202,26 @@ describe('Selection-ws', () => {
     webSocket.on('message', async (data) => {
       expect(JSON.parse(data.toString())).toEqual({
         data: {
-          canvasId: 'some-unique-id',
+          canvasId: canvas.id,
           shapeIds: [],
         },
         event: 'selection/:canvasId/put',
       });
-      selectionModel.find({ canvasId: 'some-unique-id' }).then((selections) => {
+      selectionModel.find({ canvas }).then((selections) => {
         expect(selections.length).toBe(0);
       });
       done();
     });
 
-    shapeModel.create(shapeMockData).then((shape) => {
-      selectionModel.create({ shape, canvasId: 'some-unique-id' }).then(() => {
+    shapeModel.create({ ...shapeMockData, canvas }).then((shape) => {
+      selectionModel.create({ shape, canvas }).then(() => {
         webSocket.send(
           JSON.stringify({
             event: 'selection/:canvasId/put',
             data: {
               selectShapes: [],
               deselectShapes: [],
-              canvasId: 'some-unique-id',
+              canvasId: canvas.id,
               deselectAll: true,
             },
           }),

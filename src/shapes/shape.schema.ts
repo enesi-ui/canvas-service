@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import {Canvas} from "../canvas/canvas.schema";
 
 export type ShapeDocument = HydratedDocument<Shape>;
 
@@ -52,8 +53,8 @@ export class Shape {
   @Prop({ required: true })
   zIndex: number;
 
-  @Prop({ required: true })
-  canvasId: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Canvas', required: true })
+  canvas: Canvas;
 
   id: string;
 }

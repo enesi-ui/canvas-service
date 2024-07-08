@@ -1,28 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { CreateShapeDto, UpdateShapeDto } from './shape.dto';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { MainComponent } from '../main-components/main-component.schema';
 import mongoose, { Model } from 'mongoose';
 import { Shape } from './shape.schema';
+import { Canvas } from '../canvas/canvas.schema';
 
 @Injectable()
 export class ShapesService {
   constructor(
     @InjectModel(Shape.name)
     private shapeModel: Model<Shape>,
+    @InjectModel(Canvas.name)
+    private canvasModel: Model<Canvas>,
     @InjectModel(MainComponent.name)
     private mainComponentModel: Model<MainComponent>,
+    @InjectConnection() private connection: mongoose.Connection,
   ) {}
 
-  create(createShapeDto: CreateShapeDto) {
-    const shape = new this.shapeModel(createShapeDto);
-    return shape.save();
+  async create(createShapeDto: CreateShapeDto) {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      const canvas = await this.canvasModel
+        .findById(createShapeDto.canvasId)
+        .session(session)
+        .exec();
+
+      const minZIndex = canvas.minZIndex - 1;
+
+      const shape = new this.shapeModel({
+        ...createShapeDto,
+        zIndex: minZIndex,
+        canvas,
+      });
+
+      await canvas.updateOne({ minZIndex }).session(session).exec();
+
+      const newShape = await shape.save({ session });
+
+      await session.commitTransaction();
+
+      return newShape;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      await session.endSession();
+    }
   }
 
-  findAll(sortByZIndex = false, excludeId?: string) {
+  findAll(canvasId: string, sortByZIndex = false, excludeId?: string) {
     const query = {};
     if (excludeId) {
       query['_id'] = { $ne: excludeId };
+    }
+    if (canvasId) {
+      query['canvas'] = canvasId;
     }
     return sortByZIndex
       ? this.shapeModel.find(query).sort({ zIndex: 1 }).exec()

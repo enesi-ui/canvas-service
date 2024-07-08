@@ -26,8 +26,8 @@ export class ShapesGateway {
   @WebSocketServer()
   server: Server;
   @SubscribeMessage('shapes/get')
-  onShapes(): Observable<WsResponse<Shape[]>> {
-    const shapes = from(this.shapeService.findAll());
+  onShapes(@MessageBody() canvasId: string): Observable<WsResponse<Shape[]>> {
+    const shapes = from(this.shapeService.findAll(canvasId));
     return shapes.pipe(map((item) => ({ event: 'shapes/get', data: item })));
   }
 

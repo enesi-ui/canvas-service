@@ -7,6 +7,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { WebSocket } from 'ws';
 import { ObjectsModule } from '../src/objects/objects.module';
+import { Canvas } from '../src/canvas/canvas.schema';
 
 const mongooseTestModule = new MongooseTestModule();
 
@@ -35,7 +36,9 @@ const mockData = {
 describe('Objects-ws', () => {
   let app: INestApplication;
   let shapeModel: Model<Shape>;
+  let canvasModel: Model<Canvas>;
   let webSocket: WebSocket;
+  let canvas: Canvas;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -47,6 +50,10 @@ describe('Objects-ws', () => {
     await app.init();
 
     shapeModel = moduleFixture.get<Model<Shape>>(getModelToken(Shape.name));
+
+    canvasModel = moduleFixture.get<Model<Canvas>>(getModelToken(Canvas.name));
+
+    canvas = await canvasModel.create({ name: 'Some Canvas', minZIndex: 100 });
 
     webSocket = new WebSocket('http://localhost:8082');
 
@@ -73,7 +80,7 @@ describe('Objects-ws', () => {
       done();
     });
 
-    shapeModel.create(mockData).then(() => {
+    shapeModel.create({ ...mockData, canvas }).then(() => {
       webSocket.send(
         JSON.stringify({
           event: 'objects/get',
@@ -93,7 +100,7 @@ describe('Objects-ws', () => {
       done();
     });
 
-    shapeModel.create(mockData).then((savedShapes) => {
+    shapeModel.create({ ...mockData, canvas }).then((savedShapes) => {
       const id = savedShapes._id;
 
       webSocket.send(
@@ -123,13 +130,13 @@ describe('Objects-ws', () => {
     });
 
     shapeModel
-      .create({ ...mockData, name: 'first', zIndex: 10 })
+      .create({ ...mockData, canvas, name: 'first', zIndex: 10 })
       .then((shape1) => {
         shapeModel
-          .create({ ...mockData, name: 'second', zIndex: 11 })
+          .create({ ...mockData, canvas, name: 'second', zIndex: 11 })
           .then(() => {
             shapeModel
-              .create({ ...mockData, name: 'third', zIndex: 12 })
+              .create({ ...mockData, canvas, name: 'third', zIndex: 12 })
               .then((shape3) => {
                 const id1 = shape1._id;
                 const id3 = shape3._id;
@@ -163,13 +170,13 @@ describe('Objects-ws', () => {
     });
 
     shapeModel
-      .create({ ...mockData, name: 'first', zIndex: 10 })
+      .create({ ...mockData, canvas, name: 'first', zIndex: 10 })
       .then((shape1) => {
         shapeModel
-          .create({ ...mockData, name: 'second', zIndex: 11 })
+          .create({ ...mockData, canvas, name: 'second', zIndex: 11 })
           .then(() => {
             shapeModel
-              .create({ ...mockData, name: 'third', zIndex: 12 })
+              .create({ ...mockData, canvas, name: 'third', zIndex: 12 })
               .then(() => {
                 const id1 = shape1._id;
                 webSocket.send(
@@ -205,27 +212,29 @@ describe('Objects-ws', () => {
       done();
     });
 
-    shapeModel.create({ ...mockData, name: 'first', zIndex: 10 }).then(() => {
-      shapeModel
-        .create({ ...mockData, name: 'second', zIndex: 11 })
-        .then(() => {
-          shapeModel
-            .create({ ...mockData, name: 'third', zIndex: 12 })
-            .then((shape) => {
-              const id = shape._id;
-              webSocket.send(
-                JSON.stringify({
-                  event: 'objects/:id/z-index/patch',
-                  data: {
-                    id: id,
-                    onBottom: true,
-                    type: 'RECTANGLE',
-                  },
-                }),
-              );
-            });
-        });
-    });
+    shapeModel
+      .create({ ...mockData, canvas, name: 'first', zIndex: 10 })
+      .then(() => {
+        shapeModel
+          .create({ ...mockData, canvas, name: 'second', zIndex: 11 })
+          .then(() => {
+            shapeModel
+              .create({ ...mockData, canvas, name: 'third', zIndex: 12 })
+              .then((shape) => {
+                const id = shape._id;
+                webSocket.send(
+                  JSON.stringify({
+                    event: 'objects/:id/z-index/patch',
+                    data: {
+                      id: id,
+                      onBottom: true,
+                      type: 'RECTANGLE',
+                    },
+                  }),
+                );
+              });
+          });
+      });
   });
 
   afterEach(async () => {
