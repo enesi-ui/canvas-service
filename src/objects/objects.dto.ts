@@ -1,4 +1,10 @@
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDefined,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UpdateZIndexObjectDto {
   @IsString()
@@ -15,6 +21,10 @@ export class UpdateZIndexObjectDto {
   @IsOptional()
   @IsBoolean()
   onBottom?: string;
+
+  @IsString()
+  @IsDefined()
+  canvasId: string;
 }
 
 export class UpdateObjectDto {

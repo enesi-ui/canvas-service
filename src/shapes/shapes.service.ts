@@ -51,13 +51,14 @@ export class ShapesService {
   }
 
   findAll(canvasId: string, sortByZIndex = false, excludeId?: string) {
-    const query = {};
+    const query = {
+      canvas: canvasId,
+    };
+
     if (excludeId) {
       query['_id'] = { $ne: excludeId };
     }
-    if (canvasId) {
-      query['canvas'] = canvasId;
-    }
+
     return sortByZIndex
       ? this.shapeModel.find(query).sort({ zIndex: 1 }).exec()
       : this.shapeModel.find(query).exec();
@@ -67,7 +68,7 @@ export class ShapesService {
     return this.shapeModel.findById(id).exec();
   }
 
-  async findAllAbove(id: string, excludeId?: string) {
+  async findAllAbove(id: string, canvasId, excludeId?: string) {
     const shape = await this.shapeModel.findById(id).exec();
     if (!shape) {
       return [];

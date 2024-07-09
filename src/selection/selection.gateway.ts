@@ -12,7 +12,6 @@ import { UpdateSelectionDto } from './selection.dto';
 import { map } from 'rxjs/operators';
 import { Server } from 'ws';
 import { SelectionService } from './selection.service';
-import { Selection } from './selection.schema';
 
 @UseFilters(new WebsocketExceptionsFilter())
 @UsePipes(new ValidationPipe({ transform: true }))

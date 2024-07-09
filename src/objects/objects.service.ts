@@ -13,8 +13,8 @@ export class ObjectsService {
     @InjectConnection() private connection: mongoose.Connection,
   ) {}
 
-  findAll() {
-    return this.shapeService.findAll();
+  findAll(canvasId: string) {
+    return this.shapeService.findAll(canvasId);
   }
 
   findOne(id: string) {
@@ -24,7 +24,8 @@ export class ObjectsService {
   async updateZIndex(
     updateZIndexObjectDto: UpdateZIndexObjectDto,
   ): Promise<EnesiObject[]> {
-    const { id, aboveObjectId, onBottom, onTop } = updateZIndexObjectDto;
+    const { id, canvasId, aboveObjectId, onBottom, onTop } =
+      updateZIndexObjectDto;
     // either aboveObjectId or belowObjectId must be provided
     if (!aboveObjectId && !onTop && !onBottom) {
       throw new Error(
@@ -44,7 +45,7 @@ export class ObjectsService {
     }
 
     if (onBottom) {
-      const all = await this.shapeService.findAll(true, id);
+      const all = await this.shapeService.findAll(canvasId, true, id);
 
       const updatedZIndices = all.map((object) => {
         return { id: object.id, zIndex: object.zIndex + 1 };
@@ -61,6 +62,7 @@ export class ObjectsService {
     if (aboveObjectId) {
       const objectsAbove = await this.shapeService.findAllAbove(
         aboveObjectId,
+        canvasId,
         id,
       );
       const aboveObject = await this.shapeService.findOne(aboveObjectId);

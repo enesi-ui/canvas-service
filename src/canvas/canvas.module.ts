@@ -10,4 +10,4 @@ import { CanvasGateway } from './canvas.gateway';
   ],
   providers: [CanvasService, CanvasGateway],
 })
-export class ObjectsModule {}
+export class CanvasModule {}

@@ -26,8 +26,10 @@ export class ObjectsGateway {
   @WebSocketServer()
   server: Server;
   @SubscribeMessage('objects/get')
-  onObjects(): Observable<WsResponse<EnesiObject[]>> {
-    const objects = from(this.objectsService.findAll());
+  onObjects(
+    @MessageBody() canvasId: string,
+  ): Observable<WsResponse<EnesiObject[]>> {
+    const objects = from(this.objectsService.findAll(canvasId));
     return objects.pipe(map((item) => ({ event: 'objects/get', data: item })));
   }
 

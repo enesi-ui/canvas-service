@@ -12,7 +12,7 @@ import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WebsocketExceptionsFilter } from '../filters/ws-exception.filter';
 import { CanvasService } from './canvas.service';
 import { Canvas } from './canvas.schema';
-import {CanvasDto} from "./canvas.dto";
+import { CanvasDto } from './canvas.dto';
 
 @UseFilters(new WebsocketExceptionsFilter())
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -24,8 +24,10 @@ export class CanvasGateway {
   server: Server;
   @SubscribeMessage('canvases/get')
   onCanvases(): Observable<WsResponse<Canvas[]>> {
-    const objects = from(this.canvasService.findAll());
-    return objects.pipe(map((item) => ({ event: 'canvases/get', data: item })));
+    const canvases = from(this.canvasService.findAll());
+    return canvases.pipe(
+      map((item) => ({ event: 'canvases/get', data: item })),
+    );
   }
 
   @SubscribeMessage('canvases/:id/get')

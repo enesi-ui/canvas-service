@@ -20,7 +20,8 @@ export class SelectionService {
 
   async find(canvasId: string) {
     const canvas = await this.canvasModel.findById(canvasId).exec();
-    if (!canvas) throw new WsException('Canvas not found');
+    if (!canvas)
+      throw new WsException({ data: `Canvas not found ${canvasId}` });
     const selections = await this.selectionModel.find({ canvas }).exec();
     return {
       canvasId,

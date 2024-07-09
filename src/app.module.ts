@@ -10,6 +10,7 @@ import { VariantModule } from './variant/variant.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SelectionModule } from './selection/selection.module';
 import { ObjectsModule } from './objects/objects.module';
+import { CanvasModule } from './canvas/canvas.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ObjectsModule } from './objects/objects.module';
     VariantModule,
     SelectionModule,
     ObjectsModule,
+    CanvasModule,
   ],
 })
 export class AppModule {}
