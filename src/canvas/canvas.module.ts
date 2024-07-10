@@ -9,5 +9,6 @@ import { CanvasGateway } from './canvas.gateway';
     MongooseModule.forFeature([{ name: Canvas.name, schema: CanvasSchema }]),
   ],
   providers: [CanvasService, CanvasGateway],
+  exports: [CanvasService],
 })
 export class CanvasModule {}

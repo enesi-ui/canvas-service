@@ -9,6 +9,9 @@ export class Canvas {
   maxZIndex: number;
 
   @Prop({ required: true })
+  minZIndex: number;
+
+  @Prop({ required: true })
   name: string;
 
   id: string;

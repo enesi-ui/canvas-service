@@ -5,11 +5,13 @@ import { UpdateObjectDto, UpdateZIndexObjectDto } from './objects.dto';
 import { EnesiObject } from './object';
 import mongoose from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
+import { CanvasService } from '../canvas/canvas.service';
 
 @Injectable()
 export class ObjectsService {
   constructor(
     private shapeService: ShapesService,
+    private canvasService: CanvasService,
     @InjectConnection() private connection: mongoose.Connection,
   ) {}
 
@@ -24,66 +26,74 @@ export class ObjectsService {
   async updateZIndex(
     updateZIndexObjectDto: UpdateZIndexObjectDto,
   ): Promise<EnesiObject[]> {
-    const { id, canvasId, aboveObjectId, onBottom, onTop } =
+    const { id, canvasId, belowObject, onBottom, onTop } =
       updateZIndexObjectDto;
     // either aboveObjectId or belowObjectId must be provided
-    if (!aboveObjectId && !onTop && !onBottom) {
+    if (!belowObject && !onTop && !onBottom) {
       throw new Error(
-        'Either aboveObjectId or onTop or onBottom must be provided',
+        'Either belowObject or onTop or onBottom must be provided',
       );
     }
 
-    const toUpdateZIndex = [];
-
     if (onTop) {
-      const top = await this.shapeService.findTop();
-
-      toUpdateZIndex.push({
-        id,
-        zIndex: top.zIndex + 1,
-      });
+      if (!canvasId) {
+        throw new Error('CanvasId must be provided');
+      }
     }
 
     if (onBottom) {
       if (!canvasId) {
         throw new Error('CanvasId must be provided');
       }
-      const all = await this.shapeService.findAll(canvasId, true, id);
-
-      const updatedZIndices = all.map((object) => {
-        return { id: object.id, zIndex: object.zIndex + 1 };
-      });
-
-      const updateCurrentZIndex = {
-        id,
-        zIndex: updatedZIndices[0].zIndex - 1,
-      };
-
-      toUpdateZIndex.push(updateCurrentZIndex, ...updatedZIndices);
     }
 
-    if (aboveObjectId) {
-      const objectsAbove = await this.shapeService.findAllAbove(
-        aboveObjectId,
-        id,
-      );
-      const aboveObject = await this.shapeService.findOne(aboveObjectId);
-
-      const updatedZIndices = objectsAbove.map((object) => {
-        return { id: object.id, zIndex: object.zIndex + 1 };
-      });
-
-      const updateCurrentZIndex = {
-        id,
-        zIndex: aboveObject.zIndex + 1,
-      };
-
-      toUpdateZIndex.push(updateCurrentZIndex, ...updatedZIndices);
-    }
+    const toUpdateZIndex = [];
 
     const session = await this.connection.startSession();
     session.startTransaction();
+
     try {
+      if (onTop) {
+        const canvas = await this.canvasService.findOne(canvasId);
+
+        await this.canvasService.updateMaxZIndex(canvasId, session);
+
+        toUpdateZIndex.push({
+          id,
+          zIndex: canvas.maxZIndex + 1,
+        });
+      }
+
+      if (onBottom) {
+        const canvas = await this.canvasService.findOne(canvasId);
+
+        await this.canvasService.updateMinZIndex(canvasId, session);
+
+        toUpdateZIndex.push({
+          id,
+          zIndex: canvas.minZIndex - 1,
+        });
+      }
+
+      if (belowObject) {
+        const objectsBelow = await this.shapeService.findAllBelow(
+          belowObject,
+          id,
+        );
+        const foundBelowObject = await this.shapeService.findOne(belowObject);
+
+        const updatedZIndices = objectsBelow.map((object) => {
+          return { id: object.id, zIndex: object.zIndex - 1 };
+        });
+
+        const updateCurrentZIndex = {
+          id,
+          zIndex: foundBelowObject.zIndex - 1,
+        };
+
+        toUpdateZIndex.push(updateCurrentZIndex, ...updatedZIndices);
+      }
+
       const objects = await this.shapeService.updateZIndex(
         toUpdateZIndex,
         session,

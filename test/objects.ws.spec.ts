@@ -53,7 +53,11 @@ describe('Objects-ws', () => {
 
     canvasModel = moduleFixture.get<Model<Canvas>>(getModelToken(Canvas.name));
 
-    canvas = await canvasModel.create({ name: 'Some Canvas', maxZIndex: 100 });
+    canvas = await canvasModel.create({
+      name: 'Some Canvas',
+      maxZIndex: 12,
+      minZIndex: 10,
+    });
 
     webSocket = new WebSocket('http://localhost:8082');
 
@@ -120,10 +124,7 @@ describe('Objects-ws', () => {
           name,
           zIndex,
         })),
-      ).toEqual([
-        { name: 'third', zIndex: 11 },
-        { name: 'second', zIndex: 12 },
-      ]);
+      ).toEqual([{ name: 'third', zIndex: 9 }]);
       expect(JSON.parse(data.toString()).event).toEqual(
         'objects/:id/z-index/patch',
       );
@@ -146,7 +147,50 @@ describe('Objects-ws', () => {
                     event: 'objects/:id/z-index/patch',
                     data: {
                       id: id3,
-                      aboveObjectId: id1,
+                      belowObject: id1,
+                      type: 'RECTANGLE',
+                    },
+                  }),
+                );
+              });
+          });
+      });
+  });
+
+  it('objects/:id/z-index/patch - in between two object', (done) => {
+    webSocket.on('message', async (data) => {
+      expect(
+        JSON.parse(data.toString()).data.map(({ name, zIndex }) => ({
+          name,
+          zIndex,
+        })),
+      ).toEqual([
+        { name: 'third', zIndex: 10 },
+        { name: 'first', zIndex: 9 },
+      ]);
+      expect(JSON.parse(data.toString()).event).toEqual(
+        'objects/:id/z-index/patch',
+      );
+      done();
+    });
+
+    shapeModel
+      .create({ ...mockData, canvas, name: 'first', zIndex: 10 })
+      .then(() => {
+        shapeModel
+          .create({ ...mockData, canvas, name: 'second', zIndex: 11 })
+          .then((shape2) => {
+            shapeModel
+              .create({ ...mockData, canvas, name: 'third', zIndex: 12 })
+              .then((shape3) => {
+                const id2 = shape2._id;
+                const id3 = shape3._id;
+                webSocket.send(
+                  JSON.stringify({
+                    event: 'objects/:id/z-index/patch',
+                    data: {
+                      id: id3,
+                      belowObject: id2,
                       type: 'RECTANGLE',
                     },
                   }),
@@ -187,6 +231,7 @@ describe('Objects-ws', () => {
                       id: id1,
                       onTop: true,
                       type: 'RECTANGLE',
+                      canvasId: canvas.id,
                     },
                   }),
                 );
@@ -203,9 +248,7 @@ describe('Objects-ws', () => {
           zIndex,
         })),
       ).toEqual([
-        { name: 'third', zIndex: 10 },
-        { name: 'first', zIndex: 11 },
-        { name: 'second', zIndex: 12 },
+        { name: 'third', zIndex: 9 },
       ]);
       expect(JSON.parse(data.toString()).event).toEqual(
         'objects/:id/z-index/patch',

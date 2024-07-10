@@ -1,6 +1,5 @@
 import {
-  IsBoolean,
-  IsDefined,
+  IsBoolean, IsDefined,
   IsNumber,
   IsOptional,
   IsString,
@@ -8,11 +7,12 @@ import {
 
 export class UpdateZIndexObjectDto {
   @IsString()
+  @IsDefined()
   id: string;
 
   @IsOptional()
   @IsString()
-  aboveObjectId?: string;
+  belowObject?: string;
 
   @IsOptional()
   @IsBoolean()

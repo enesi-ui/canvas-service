@@ -68,12 +68,12 @@ export class ShapesService {
     return this.shapeModel.findById(id).exec();
   }
 
-  async findAllAbove(id: string, excludeId?: string) {
+  async findAllBelow(id: string, excludeId?: string) {
     const shape = await this.shapeModel.findById(id).exec();
     if (!shape) {
       return [];
     }
-    const query = { zIndex: { $gt: shape.zIndex } };
+    const query = { zIndex: { $lt: shape.zIndex } };
     if (excludeId) {
       query['_id'] = { $ne: excludeId };
     }
