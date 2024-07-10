@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-mongo <<EOF
+mongosh <<EOF
 var config = {
     "_id": "rs0",
     "members": [
