@@ -59,7 +59,7 @@ describe('Shapes-ws', () => {
 
     canvas = await canvasModel.create({
       name: 'canvasName',
-      minZIndex: 0,
+      maxZIndex: 0,
     });
 
     webSocket = new WebSocket('http://localhost:8082');
@@ -174,7 +174,7 @@ describe('Shapes-ws', () => {
 
     shapeModel.create({ ...mockData, canvas }).then(() => {
       canvasModel
-        .create({ name: 'canvasName2', minZIndex: 0 })
+        .create({ name: 'canvasName2', maxZIndex: 0 })
         .then((newCanvas) => {
           shapeModel
             .create({ ...mockData, type: 'ELLIPSE', canvas: newCanvas })

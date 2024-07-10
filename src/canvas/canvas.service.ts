@@ -14,7 +14,7 @@ export class CanvasService {
   ) {}
 
   async create(data: CanvasDto): Promise<Canvas> {
-    const canvas = new this.canvasModel({ ...data, minZIndex: 1000 });
+    const canvas = new this.canvasModel({ ...data, maxZIndex: 1000 });
     return canvas.save();
   }
 

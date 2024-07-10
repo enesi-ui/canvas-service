@@ -53,7 +53,7 @@ describe('Objects-ws', () => {
 
     canvasModel = moduleFixture.get<Model<Canvas>>(getModelToken(Canvas.name));
 
-    canvas = await canvasModel.create({ name: 'Some Canvas', minZIndex: 100 });
+    canvas = await canvasModel.create({ name: 'Some Canvas', maxZIndex: 100 });
 
     webSocket = new WebSocket('http://localhost:8082');
 

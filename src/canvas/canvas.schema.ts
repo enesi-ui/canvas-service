@@ -6,7 +6,7 @@ export type CanvasDocument = HydratedDocument<Canvas>;
 @Schema({ id: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class Canvas {
   @Prop({ required: true })
-  minZIndex: number;
+  maxZIndex: number;
 
   @Prop({ required: true })
   name: string;

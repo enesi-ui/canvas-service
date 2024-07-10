@@ -27,15 +27,15 @@ export class ShapesService {
         .session(session)
         .exec();
 
-      const minZIndex = canvas.minZIndex - 1;
+      const maxZIndex = canvas.maxZIndex + 1;
 
       const shape = new this.shapeModel({
         ...createShapeDto,
-        zIndex: minZIndex,
+        zIndex: maxZIndex,
         canvas,
       });
 
-      await canvas.updateOne({ minZIndex }).session(session).exec();
+      await canvas.updateOne({ maxZIndex }).session(session).exec();
 
       const newShape = await shape.save({ session });
 

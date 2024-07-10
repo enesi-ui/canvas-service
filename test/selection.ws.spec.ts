@@ -63,7 +63,7 @@ describe('Selection-ws', () => {
 
     canvas = await canvasModel.create({
       name: 'canvasName',
-      minZIndex: 0,
+      maxZIndex: 0,
     });
 
     webSocket = new WebSocket('http://localhost:8082');
@@ -178,7 +178,7 @@ describe('Selection-ws', () => {
       canvasModel
         .create({
           name: 'newCanvasName',
-          minZIndex: 0,
+          maxZIndex: 0,
         })
         .then((newCanvas) => {
           selectionModel.create({ shape, canvas }).then(() => {
