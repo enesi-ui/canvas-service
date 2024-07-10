@@ -153,6 +153,7 @@ describe('Shapes-ws', () => {
       webSocket.send(
         JSON.stringify({
           event: 'shapes/get',
+          data: canvas.id,
         }),
       );
     });

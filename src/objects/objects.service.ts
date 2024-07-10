@@ -45,6 +45,9 @@ export class ObjectsService {
     }
 
     if (onBottom) {
+      if (!canvasId) {
+        throw new Error('CanvasId must be provided');
+      }
       const all = await this.shapeService.findAll(canvasId, true, id);
 
       const updatedZIndices = all.map((object) => {
@@ -62,7 +65,6 @@ export class ObjectsService {
     if (aboveObjectId) {
       const objectsAbove = await this.shapeService.findAllAbove(
         aboveObjectId,
-        canvasId,
         id,
       );
       const aboveObject = await this.shapeService.findOne(aboveObjectId);

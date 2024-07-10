@@ -84,6 +84,7 @@ describe('Objects-ws', () => {
       webSocket.send(
         JSON.stringify({
           event: 'objects/get',
+          data: canvas.id,
         }),
       );
     });
@@ -229,6 +230,7 @@ describe('Objects-ws', () => {
                       id: id,
                       onBottom: true,
                       type: 'RECTANGLE',
+                      canvasId: canvas.id,
                     },
                   }),
                 );

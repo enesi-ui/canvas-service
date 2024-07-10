@@ -22,9 +22,9 @@ export class UpdateZIndexObjectDto {
   @IsBoolean()
   onBottom?: string;
 
+  @IsOptional()
   @IsString()
-  @IsDefined()
-  canvasId: string;
+  canvasId?: string;
 }
 
 export class UpdateObjectDto {

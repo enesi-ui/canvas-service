@@ -70,8 +70,8 @@ export class ObjectsGateway {
     @MessageBody() data: UpdateZIndexObjectDto,
     @ConnectedSocket() client: WebSocket,
   ): Observable<WsResponse<EnesiObject[]>> {
-    const shape = from(this.objectsService.updateZIndex(data));
-    return shape.pipe(
+    const shapes = from(this.objectsService.updateZIndex(data));
+    return shapes.pipe(
       map((item) => {
         this.server.clients.forEach((otherClient) => {
           if (

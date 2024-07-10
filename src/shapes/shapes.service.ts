@@ -68,7 +68,7 @@ export class ShapesService {
     return this.shapeModel.findById(id).exec();
   }
 
-  async findAllAbove(id: string, canvasId, excludeId?: string) {
+  async findAllAbove(id: string, excludeId?: string) {
     const shape = await this.shapeModel.findById(id).exec();
     if (!shape) {
       return [];
