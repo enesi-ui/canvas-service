@@ -247,9 +247,7 @@ describe('Objects-ws', () => {
           name,
           zIndex,
         })),
-      ).toEqual([
-        { name: 'third', zIndex: 9 },
-      ]);
+      ).toEqual([{ name: 'third', zIndex: 9 }]);
       expect(JSON.parse(data.toString()).event).toEqual(
         'objects/:id/z-index/patch',
       );

@@ -23,7 +23,7 @@ export class ShapesService {
     session.startTransaction();
     try {
       const canvas = await this.canvasModel
-        .findById(createShapeDto.canvasId)
+        .findById(createShapeDto.canvas)
         .session(session)
         .exec();
 

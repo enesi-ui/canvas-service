@@ -108,7 +108,7 @@ describe('Shapes-ws', () => {
     webSocket.send(
       JSON.stringify({
         event: 'shapes/post',
-        data: { ...mockData, canvasId: canvas.id.toString() },
+        data: { ...mockData, canvas: canvas.id.toString() },
       }),
     );
   });

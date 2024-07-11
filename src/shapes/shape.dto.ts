@@ -60,7 +60,7 @@ export class CreateShapeDto {
 
   @IsDefined()
   @IsString()
-  canvasId: string;
+  canvas: string;
 }
 
 export class UpdateShapeDto {
