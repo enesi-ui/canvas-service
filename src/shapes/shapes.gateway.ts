@@ -27,7 +27,7 @@ export class ShapesGateway {
   server: Server;
   @SubscribeMessage('shapes/get')
   onShapes(@MessageBody() canvasId: string): Observable<WsResponse<Shape[]>> {
-    const shapes = from(this.shapeService.findAll(canvasId));
+    const shapes = from(this.shapeService.findAll(canvasId, true));
     return shapes.pipe(map((item) => ({ event: 'shapes/get', data: item })));
   }
 

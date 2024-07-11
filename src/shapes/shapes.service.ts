@@ -60,7 +60,7 @@ export class ShapesService {
     }
 
     return sortByZIndex
-      ? this.shapeModel.find(query).sort({ zIndex: 1 }).exec()
+      ? this.shapeModel.find(query).sort({ zIndex: -1 }).exec()
       : this.shapeModel.find(query).exec();
   }
 
