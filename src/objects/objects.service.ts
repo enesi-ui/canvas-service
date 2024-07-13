@@ -50,9 +50,7 @@ export class ObjectsService {
     const toUpdateZIndex = [];
 
     const session = await this.connection.startSession();
-    session.startTransaction();
-
-    try {
+    const objects = await session.withTransaction(async () => {
       if (onTop) {
         const canvas = await this.canvasService.findOne(canvasId);
 
@@ -94,18 +92,11 @@ export class ObjectsService {
         toUpdateZIndex.push(updateCurrentZIndex, ...updatedZIndices);
       }
 
-      const objects = await this.shapeService.updateZIndex(
-        toUpdateZIndex,
-        session,
-      );
-      await session.commitTransaction();
-      return objects;
-    } catch (error) {
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      await session.endSession();
-    }
+      return await this.shapeService.updateZIndex(toUpdateZIndex, session);
+    });
+
+    await session.endSession();
+    return objects;
   }
 
   update(data: UpdateObjectDto) {
