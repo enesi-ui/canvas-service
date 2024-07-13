@@ -157,6 +157,85 @@ describe('Objects-ws', () => {
       });
   });
 
+  it('objects/:id/z-index/patch with irregular z index distances', (done) => {
+    webSocket.on('message', async (data) => {
+      expect(
+        JSON.parse(data.toString()).data.map(({ name, zIndex }) => ({
+          name,
+          zIndex,
+        })),
+      ).toEqual([
+        { name: 'first', zIndex: -35 },
+        { name: 'third', zIndex: -36 },
+      ]);
+      expect(JSON.parse(data.toString()).event).toEqual(
+        'objects/:id/z-index/patch',
+      );
+      done();
+    });
+
+    shapeModel
+      .create({ ...mockData, canvas, name: 'first', zIndex: -30 })
+      .then((shape1) => {
+        shapeModel
+          .create({ ...mockData, canvas, name: 'second', zIndex: -34 })
+          .then((shape2) => {
+            shapeModel
+              .create({ ...mockData, canvas, name: 'third', zIndex: -35 })
+              .then(() => {
+                webSocket.send(
+                  JSON.stringify({
+                    event: 'objects/:id/z-index/patch',
+                    data: {
+                      id: shape1._id,
+                      belowObject: shape2._id,
+                      type: 'RECTANGLE',
+                    },
+                  }),
+                );
+              });
+          });
+      });
+  });
+
+  it('objects/:id/z-index/patch below last object', (done) => {
+    webSocket.on('message', async (data) => {
+      expect(
+        JSON.parse(data.toString()).data.map(({ name, zIndex }) => ({
+          name,
+          zIndex,
+        })),
+      ).toEqual([{ name: 'first', zIndex: -36 }]);
+      expect(JSON.parse(data.toString()).event).toEqual(
+        'objects/:id/z-index/patch',
+      );
+      done();
+    });
+
+    shapeModel
+      .create({ ...mockData, canvas, name: 'first', zIndex: -30 })
+      .then((shape1) => {
+        shapeModel
+          .create({ ...mockData, canvas, name: 'second', zIndex: -34 })
+          .then(() => {
+            shapeModel
+              .create({ ...mockData, canvas, name: 'third', zIndex: -35 })
+              .then((shape3) => {
+                webSocket.send(
+                  JSON.stringify({
+                    event: 'objects/:id/z-index/patch',
+                    data: {
+                      id: shape1._id,
+                      belowObject: shape3._id,
+                      type: 'RECTANGLE',
+                    },
+                  }),
+                );
+              });
+          });
+      });
+  });
+
   it('objects/:id/z-index/patch - in between two object', (done) => {
     webSocket.on('message', async (data) => {
       expect(
